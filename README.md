@@ -20,7 +20,7 @@ This is mostly useful for code generation.
 
 * **+** It handles more cases, like:
 
-      stmt`import Lib from "${lib}"`
+        stmt`import Lib from "${lib}"`
 
   which can't be handled by `babel-template` (it can only fill identifiers).
 
