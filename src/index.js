@@ -97,7 +97,7 @@ export default function GenASTBabelPlugin(ctx) {
   }
 
   function locateStatement(node) {
-    return node.program.body[0];
+    return node.program.body.length === 1 ? node.program.body[0] : node.program.body;
   }
 
   return {

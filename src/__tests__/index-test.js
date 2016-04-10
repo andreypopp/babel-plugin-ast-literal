@@ -52,6 +52,60 @@ describe('babel-plugin-ast-literal', function() {
 `.trim());
   });
 
+  it('generates lists of statements', function() {
+    let src = 'stmt`let result = 1 + ${2}; console.log(result);`';
+    let output = transform(src, {plugins: [ASTLiteral]}).code;
+    assert.equal(output, `
+(function (_param) {
+  return [{
+    "type": "VariableDeclaration",
+    "declarations": [{
+      "type": "VariableDeclarator",
+      "id": {
+        "type": "Identifier",
+        "name": "result"
+      },
+      "init": {
+        "type": "BinaryExpression",
+        "left": {
+          "type": "NumericLiteral",
+          "extra": {
+            "rawValue": 1,
+            "raw": "1"
+          },
+          "value": 1
+        },
+        "operator": "+",
+        "right": _param
+      }
+    }],
+    "kind": "let"
+  }, {
+    "type": "ExpressionStatement",
+    "expression": {
+      "type": "CallExpression",
+      "callee": {
+        "type": "MemberExpression",
+        "object": {
+          "type": "Identifier",
+          "name": "console"
+        },
+        "property": {
+          "type": "Identifier",
+          "name": "log"
+        },
+        "computed": false
+      },
+      "arguments": [{
+        "type": "Identifier",
+        "name": "result"
+      }]
+    }
+  }];
+})(2);
+`.trim());
+  });
+
   it('generates statements with return', function() {
     let src = 'stmt`return ${1}`';
     let output = transform(src, {plugins: [ASTLiteral]}).code;
