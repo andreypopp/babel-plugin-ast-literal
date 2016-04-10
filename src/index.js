@@ -26,7 +26,7 @@ function parse(source) {
     sourceType: 'module',
     allowReturnOutsideFunction: true,
     allowSuperOutsideMethod: true,
-    plugins: ['flow', 'jsx', 'objectRestSpread', 'asyncFunctions'],
+    plugins: ['flow', 'objectRestSpread', 'asyncFunctions'],
   });
 }
 

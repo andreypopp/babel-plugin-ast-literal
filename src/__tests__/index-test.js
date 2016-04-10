@@ -102,29 +102,6 @@ describe('babel-plugin-ast-literal', function() {
 `.trim());
   });
 
-  it('generates JSX', function() {
-    let src = 'expr`<div />`';
-    let output = transform(src, {plugins: [ASTLiteral]}).code;
-    assert.equal(output, `
-(function () {
-  return {
-    "type": "JSXElement",
-    "openingElement": {
-      "type": "JSXOpeningElement",
-      "attributes": [],
-      "name": {
-        "type": "JSXIdentifier",
-        "name": "div"
-      },
-      "selfClosing": true
-    },
-    "closingElement": null,
-    "children": []
-  };
-})();
-`.trim());
-  });
-
   it('generates AST with object spread', function() {
     let src = 'stmt`let x = {...x};`';
     let output = transform(src, {plugins: [ASTLiteral]}).code;

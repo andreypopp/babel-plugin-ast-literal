@@ -3,13 +3,15 @@
 Babel plugin which processes `expr` and `stmt` tagged template strings into JS
 AST nodes:
 
-    let node = expr`add(1, ${2})`
-    node // {type: 'CallExpression', ...}
+    let exportReactComponentNode = stmt`
+      export function ${name}(props) {
+        return React.createElement(
+          ${component},
+          {...props, className: styles.${className}}
+        );
+      }
+    `;
 
-    let node = stmt`
-    if (${false)) {
-      console.log('ok')
-    }`
-    node // {type: 'IfStatement', ...}
+    let jsxNode = expr`<div a="${some}" />`
 
 This is mostly useful for code generation.
