@@ -29,7 +29,10 @@ This is mostly useful for code generation.
 
 * **-** It is somewhat hacky but it works!
 
-* I wrote it when `babel-template` wasn't a thing (previous versions were
+* It allows to specify template right in place rather than defining template and
+  then applying it.
+
+* I wrote it when `babel-template` wasn't a thing (previous versions were even
   targeting Babel 5).
 
 ## Installation & Usage
