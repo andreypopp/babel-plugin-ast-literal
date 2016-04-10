@@ -1,6 +1,6 @@
 {
   "name": "babel-plugin-ast-literal",
-  "version": "0.3.1",
+  "version": "0.4.0",
   "description": "AST literals via ES2015 tagged template strings",
   "main": "./lib/index.js",
   "dependencies": {
