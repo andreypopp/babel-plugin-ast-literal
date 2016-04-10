@@ -29,6 +29,9 @@ This is mostly useful for code generation.
 
 * **-** It is somewhat hacky but it works!
 
+* I wrote it when `babel-template` wasn't a thing (previous versions were
+  targeting Babel 5).
+
 ## Installation & Usage
 
 Install from npm:
