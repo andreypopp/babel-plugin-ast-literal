@@ -16,6 +16,19 @@ Babylon (Babel JS parser) AST nodes:
 
 This is mostly useful for code generation.
 
+## Why not babel-template
+
+* **+** It handles more cases, like:
+
+      stmt`import Lib from "${lib}"`
+
+  which can't be handled by `babel-template` (it can only fill identifiers).
+
+* **+** It inlines AST Node generation in code instead of doing a pass over AST
+  Node template as babel-template does. This should be faster.
+
+* **-** It is somewhat hacky but it works!
+
 ## Installation & Usage
 
 Install from npm:
