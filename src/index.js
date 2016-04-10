@@ -124,5 +124,5 @@ function buildASTFactoryExpression(t, paramNames, paramValues, template) {
       null,
       paramNames.map(param => t.identifier(param)),
       t.blockStatement([t.returnStatement(template)])),
-    paramNames.map((_, idx) => paramValues[idx]))
+    paramNames.map((_, idx) => paramValues[idx]));
 }
