@@ -1,4 +1,11 @@
-import invariant  from 'invariant';
+/**
+ * @copyright 2015-present, Babel Plugin AST Literal team.
+ */
+
+import invariant from 'invariant';
+import * as babylon from 'babylon';
+
+const MARKER = '_babel-plugin-ast-literal';
 
 export function expr() {
   invariant(
@@ -15,32 +22,55 @@ export function stmt() {
 }
 
 export default function GenASTBabelPlugin(ctx) {
-  let {Plugin, parse, types: t} = ctx;
+  let {traverse, types: t} = ctx;
 
   function sanitizeParamsIdentifiers(node, params) {
-    ctx.traverse(node, {
-      Identifier(node) {
-        if (params.indexOf(node.name) > -1) {
-          return {type: 'Identifier', name: node.name};
+    traverse(node, {
+      enter(path) {
+        if (
+          t.isIdentifier(path.node) &&
+          params.indexOf(path.node.name) > -1 &&
+          !path.node[MARKER]
+        ) {
+          path.replaceWith({
+            type: path.node.type,
+            name: path.node.name,
+            [MARKER]: true
+          });
+        } else if (
+          t.isStringLiteral(path.node) &&
+          params.indexOf(path.node.value) > -1 &&
+          !path.node[MARKER]
+        ) {
+          path.replaceWith({
+            type: path.node.type,
+            value: path.node.value,
+            [MARKER]: true
+          });
         }
       }
     });
   }
 
   function taggedTemplateToNode(node, parent, scope) {
-    let params = [];
     let nodes = node.quasi.quasis.concat(node.quasi.expressions);
     nodes.sort((a, b) => a.start - b.start);
+
+    let params = [];
     let src = nodes.map(node => {
       if (t.isTemplateElement(node)) {
         return node.value.raw;
       } else {
         let param = scope.generateUidIdentifier('param');
         params.push(param.name);
-        return `(${param.name})`;
+        return param.name;
       }
     }).join('');
-    let nodeNode = parse(src);
+    let nodeNode = babylon.parse(src, {
+      sourceType: 'module',
+      allowReturnOutsideFunction: true,
+      allowSuperOutsideMethod: true,
+    });
     sanitizeParamsIdentifiers(nodeNode, params);
     ctx.traverse.removeProperties(nodeNode);
     return {nodeNode, params};
@@ -49,10 +79,10 @@ export default function GenASTBabelPlugin(ctx) {
   function replaceParamsWithIdentifiers(node, params, locateNode = locateExpression) {
     let src = JSON.stringify(locateNode(node));
     for (let i = 0; i < params.length; i++) {
-      let re = new RegExp(`{"type":"Identifier","name":"${params[i]}"}`);
+      let re = new RegExp(`({"type":"Identifier","name":"${params[i]}"})|({"type":"StringLiteral","value":"${params[i]}"})`);
       src = src.replace(re, params[i]);
     }
-    node = locateExpression(parse('(' + src + ')'));
+    node = locateExpression(babylon.parse('(' + src + ')'));
     ctx.traverse.removeProperties(node);
     return node;
   }
@@ -65,30 +95,34 @@ export default function GenASTBabelPlugin(ctx) {
     return node.program.body[0];
   }
 
-  return new Plugin('ast-literal', {
+  return {
     visitor: {
-      TaggedTemplateExpression(node, parent, scope) {
+      TaggedTemplateExpression(path) {
+        let {node, parent, scope} = path;
         // TODO: We need better scope-aware checks
         if (node.tag.name === 'expr') {
           let {nodeNode, params} = taggedTemplateToNode(node, parent, scope);
           nodeNode = replaceParamsWithIdentifiers(nodeNode, params, locateExpression);
-          return t.callExpression(
-            t.functionExpression(
-              null,
-              params.map(param => t.identifier(param)),
-              t.returnStatement(nodeNode)),
-            params.map((_, idx) => node.quasi.expressions[idx]));
+          path.replaceWith(
+            buildASTFactoryExpression(t, params, node.quasi.expressions, nodeNode)
+          );
         } else if (node.tag.name === 'stmt') {
           let {nodeNode, params} = taggedTemplateToNode(node, parent, scope);
           nodeNode = replaceParamsWithIdentifiers(nodeNode, params, locateStatement);
-          return t.callExpression(
-            t.functionExpression(
-              null,
-              params.map(param => t.identifier(param)),
-              t.returnStatement(nodeNode)),
-            params.map((_, idx) => node.quasi.expressions[idx]));
+          path.replaceWith(
+            buildASTFactoryExpression(t, params, node.quasi.expressions, nodeNode)
+          );
         }
       }
     }
-  });
+  };
+}
+
+function buildASTFactoryExpression(t, paramNames, paramValues, template) {
+  return t.callExpression(
+    t.functionExpression(
+      null,
+      paramNames.map(param => t.identifier(param)),
+      t.blockStatement([t.returnStatement(template)])),
+    paramNames.map((_, idx) => paramValues[idx]))
 }
