@@ -95,9 +95,100 @@ describe('babel-plugin-ast-literal', function() {
       "type": "ImportDefaultSpecifier",
       "local": _param
     }],
+    "importKind": "value",
     "source": _param2
   };
 })(something, module);
+`.trim());
+  });
+
+  it('generates JSX', function() {
+    let src = 'expr`<div />`';
+    let output = transform(src, {plugins: [ASTLiteral]}).code;
+    assert.equal(output, `
+(function () {
+  return {
+    "type": "JSXElement",
+    "openingElement": {
+      "type": "JSXOpeningElement",
+      "attributes": [],
+      "name": {
+        "type": "JSXIdentifier",
+        "name": "div"
+      },
+      "selfClosing": true
+    },
+    "closingElement": null,
+    "children": []
+  };
+})();
+`.trim());
+  });
+
+  it('generates AST with object spread', function() {
+    let src = 'stmt`let x = {...x};`';
+    let output = transform(src, {plugins: [ASTLiteral]}).code;
+    assert.equal(output, `
+(function () {
+  return {
+    "type": "VariableDeclaration",
+    "declarations": [{
+      "type": "VariableDeclarator",
+      "id": {
+        "type": "Identifier",
+        "name": "x"
+      },
+      "init": {
+        "type": "ObjectExpression",
+        "properties": [{
+          "type": "SpreadProperty",
+          "argument": {
+            "type": "Identifier",
+            "name": "x"
+          }
+        }]
+      }
+    }],
+    "kind": "let"
+  };
+})();
+`.trim());
+  });
+
+  it('generates AST with async functions', function() {
+    let src = 'stmt`async function name(x) { await x; }`';
+    let output = transform(src, {plugins: [ASTLiteral]}).code;
+    assert.equal(output, `
+(function () {
+  return {
+    "type": "FunctionDeclaration",
+    "id": {
+      "type": "Identifier",
+      "name": "name"
+    },
+    "generator": false,
+    "expression": false,
+    "async": true,
+    "params": [{
+      "type": "Identifier",
+      "name": "x"
+    }],
+    "body": {
+      "type": "BlockStatement",
+      "body": [{
+        "type": "ExpressionStatement",
+        "expression": {
+          "type": "AwaitExpression",
+          "argument": {
+            "type": "Identifier",
+            "name": "x"
+          }
+        }
+      }],
+      "directives": []
+    }
+  };
+})();
 `.trim());
   });
 

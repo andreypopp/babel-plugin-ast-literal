@@ -21,6 +21,15 @@ export function stmt() {
   );
 }
 
+function parse(source) {
+  return babylon.parse(source, {
+    sourceType: 'module',
+    allowReturnOutsideFunction: true,
+    allowSuperOutsideMethod: true,
+    plugins: ['flow', 'jsx', 'objectRestSpread', 'asyncFunctions'],
+  });
+}
+
 export default function GenASTBabelPlugin(ctx) {
   let {traverse, types: t} = ctx;
 
@@ -66,11 +75,7 @@ export default function GenASTBabelPlugin(ctx) {
         return param.name;
       }
     }).join('');
-    let nodeNode = babylon.parse(src, {
-      sourceType: 'module',
-      allowReturnOutsideFunction: true,
-      allowSuperOutsideMethod: true,
-    });
+    let nodeNode = parse(src);
     sanitizeParamsIdentifiers(nodeNode, params);
     ctx.traverse.removeProperties(nodeNode);
     return {nodeNode, params};
@@ -82,7 +87,7 @@ export default function GenASTBabelPlugin(ctx) {
       let re = new RegExp(`({"type":"Identifier","name":"${params[i]}"})|({"type":"StringLiteral","value":"${params[i]}"})`);
       src = src.replace(re, params[i]);
     }
-    node = locateExpression(babylon.parse('(' + src + ')'));
+    node = locateExpression(parse('(' + src + ')'));
     ctx.traverse.removeProperties(node);
     return node;
   }
