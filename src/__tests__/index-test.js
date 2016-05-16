@@ -21,9 +21,61 @@ describe('babel-plugin-ast-literal', function() {
       "value": 1
     },
     "operator": "+",
-    "right": _param
+    "right": _param,
+    "extra": {
+      "parenthesized": true,
+      "parenStart": 0
+    }
   };
 })(2);
+`.trim());
+  });
+
+  it('generates expressions (function expression)', function() {
+    let src = 'expr`function(${a}) { return ${a}; }`';
+    let output = transform(src, {plugins: [ASTLiteral]}).code;
+    assert.equal(output, `
+(function (_param, _param2) {
+  return {
+    "type": "FunctionExpression",
+    "id": null,
+    "generator": false,
+    "expression": false,
+    "async": false,
+    "params": [_param],
+    "body": {
+      "type": "BlockStatement",
+      "body": [{
+        "type": "ReturnStatement",
+        "argument": _param2
+      }],
+      "directives": []
+    },
+    "extra": {
+      "parenthesized": true,
+      "parenStart": 0
+    }
+  };
+})(a, a);
+`.trim());
+  });
+
+  it('generates expressions (string literal)', function() {
+    let src = 'expr`"ok"`';
+    let output = transform(src, {plugins: [ASTLiteral]}).code;
+    assert.equal(output, `
+(function () {
+  return {
+    "type": "StringLiteral",
+    "extra": {
+      "rawValue": "ok",
+      "raw": "\\\"ok\\\"",
+      "parenthesized": true,
+      "parenStart": 0
+    },
+    "value": "ok"
+  };
+})();
 `.trim());
   });
 

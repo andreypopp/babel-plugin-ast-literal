@@ -61,7 +61,7 @@ export default function GenASTBabelPlugin(ctx) {
     });
   }
 
-  function taggedTemplateToNode(node, parent, scope) {
+  function taggedTemplateToNode(node, parent, scope, options = {}) {
     let nodes = node.quasi.quasis.concat(node.quasi.expressions);
     nodes.sort((a, b) => a.start - b.start);
 
@@ -75,6 +75,9 @@ export default function GenASTBabelPlugin(ctx) {
         return param.name;
       }
     }).join('');
+    if (options.expression) {
+      src = '(' + src + ')';
+    }
     let nodeNode = parse(src);
     sanitizeParamsIdentifiers(nodeNode, params);
     ctx.traverse.removeProperties(nodeNode);
@@ -106,13 +109,15 @@ export default function GenASTBabelPlugin(ctx) {
         let {node, parent, scope} = path;
         // TODO: We need better scope-aware checks
         if (node.tag.name === 'expr') {
-          let {nodeNode, params} = taggedTemplateToNode(node, parent, scope);
+          let {nodeNode, params} = taggedTemplateToNode(
+            node, parent, scope, {expression: true});
           nodeNode = replaceParamsWithIdentifiers(nodeNode, params, locateExpression);
           path.replaceWith(
             buildASTFactoryExpression(t, params, node.quasi.expressions, nodeNode)
           );
         } else if (node.tag.name === 'stmt') {
-          let {nodeNode, params} = taggedTemplateToNode(node, parent, scope);
+          let {nodeNode, params} = taggedTemplateToNode(
+            node, parent, scope, {expression: false});
           nodeNode = replaceParamsWithIdentifiers(nodeNode, params, locateStatement);
           path.replaceWith(
             buildASTFactoryExpression(t, params, node.quasi.expressions, nodeNode)
