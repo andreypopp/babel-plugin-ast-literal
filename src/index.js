@@ -113,7 +113,7 @@ export default function GenASTBabelPlugin(ctx) {
         },
         exit(path, {file}) {
           if (file.seenASTLiteral) {
-            path.node.body.push(t.variableDeclaration('var', [
+            path.node.body.unshift(t.variableDeclaration('var', [
               t.variableDeclarator(
                 t.identifier(LIFT_ID),
                 t.memberExpression(

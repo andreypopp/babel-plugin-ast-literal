@@ -11,6 +11,8 @@ describe('babel-plugin-ast-literal', function() {
     let src = 'expr`1 + ${2}`';
     let output = transform(src, {plugins: [ASTLiteral]}).code;
     assert.equal(output, `
+var __liftToAST = require("${LIFT}").default;
+
 (function (_param) {
   _param = __liftToAST(_param);
   return {
@@ -31,8 +33,6 @@ describe('babel-plugin-ast-literal', function() {
     }
   };
 })(2);
-
-var __liftToAST = require("${LIFT}").default;
 `.trim());
   });
 
@@ -40,6 +40,8 @@ var __liftToAST = require("${LIFT}").default;
     let src = 'expr`function(${a}) { return ${a}; }`';
     let output = transform(src, {plugins: [ASTLiteral]}).code;
     assert.equal(output, `
+var __liftToAST = require("${LIFT}").default;
+
 (function (_param, _param2) {
   _param = __liftToAST(_param);
   _param2 = __liftToAST(_param2);
@@ -64,8 +66,6 @@ var __liftToAST = require("${LIFT}").default;
     }
   };
 })(a, a);
-
-var __liftToAST = require("${LIFT}").default;
 `.trim());
   });
 
@@ -73,6 +73,8 @@ var __liftToAST = require("${LIFT}").default;
     let src = 'expr`"ok"`';
     let output = transform(src, {plugins: [ASTLiteral]}).code;
     assert.equal(output, `
+var __liftToAST = require("${LIFT}").default;
+
 (function () {
   return {
     "type": "StringLiteral",
@@ -85,8 +87,6 @@ var __liftToAST = require("${LIFT}").default;
     "value": "ok"
   };
 })();
-
-var __liftToAST = require("${LIFT}").default;
 `.trim());
   });
 
@@ -94,6 +94,8 @@ var __liftToAST = require("${LIFT}").default;
     let src = 'stmt`1 + ${2}`';
     let output = transform(src, {plugins: [ASTLiteral]}).code;
     assert.equal(output, `
+var __liftToAST = require("${LIFT}").default;
+
 (function (_param) {
   _param = __liftToAST(_param);
   return {
@@ -113,8 +115,6 @@ var __liftToAST = require("${LIFT}").default;
     }
   };
 })(2);
-
-var __liftToAST = require("${LIFT}").default;
 `.trim());
   });
 
@@ -122,6 +122,8 @@ var __liftToAST = require("${LIFT}").default;
     let src = 'stmt`let result = 1 + ${2}; console.log(result);`';
     let output = transform(src, {plugins: [ASTLiteral]}).code;
     assert.equal(output, `
+var __liftToAST = require("${LIFT}").default;
+
 (function (_param) {
   _param = __liftToAST(_param);
   return [{
@@ -170,8 +172,6 @@ var __liftToAST = require("${LIFT}").default;
     }
   }];
 })(2);
-
-var __liftToAST = require("${LIFT}").default;
 `.trim());
   });
 
@@ -179,6 +179,8 @@ var __liftToAST = require("${LIFT}").default;
     let src = 'stmt`return ${1}`';
     let output = transform(src, {plugins: [ASTLiteral]}).code;
     assert.equal(output, `
+var __liftToAST = require("${LIFT}").default;
+
 (function (_param) {
   _param = __liftToAST(_param);
   return {
@@ -186,8 +188,6 @@ var __liftToAST = require("${LIFT}").default;
     "argument": _param
   };
 })(1);
-
-var __liftToAST = require("${LIFT}").default;
 `.trim());
   });
 
@@ -195,6 +195,8 @@ var __liftToAST = require("${LIFT}").default;
     let src = 'stmt`super(${1});`';
     let output = transform(src, {plugins: [ASTLiteral]}).code;
     assert.equal(output, `
+var __liftToAST = require("${LIFT}").default;
+
 (function (_param) {
   _param = __liftToAST(_param);
   return {
@@ -208,8 +210,6 @@ var __liftToAST = require("${LIFT}").default;
     }
   };
 })(1);
-
-var __liftToAST = require("${LIFT}").default;
 `.trim());
   });
 
@@ -217,6 +217,8 @@ var __liftToAST = require("${LIFT}").default;
     let src = 'stmt`import ${something} from "${module}";`';
     let output = transform(src, {plugins: [ASTLiteral]}).code;
     assert.equal(output, `
+var __liftToAST = require("${LIFT}").default;
+
 (function (_param, _param2) {
   _param = __liftToAST(_param);
   _param2 = __liftToAST(_param2);
@@ -230,8 +232,6 @@ var __liftToAST = require("${LIFT}").default;
     "source": _param2
   };
 })(something, module);
-
-var __liftToAST = require("${LIFT}").default;
 `.trim());
   });
 
@@ -239,6 +239,8 @@ var __liftToAST = require("${LIFT}").default;
     let src = 'stmt`let x = {...x};`';
     let output = transform(src, {plugins: [ASTLiteral]}).code;
     assert.equal(output, `
+var __liftToAST = require("${LIFT}").default;
+
 (function () {
   return {
     "type": "VariableDeclaration",
@@ -262,8 +264,6 @@ var __liftToAST = require("${LIFT}").default;
     "kind": "let"
   };
 })();
-
-var __liftToAST = require("${LIFT}").default;
 `.trim());
   });
 
@@ -271,6 +271,8 @@ var __liftToAST = require("${LIFT}").default;
     let src = 'stmt`async function name(x) { await x; }`';
     let output = transform(src, {plugins: [ASTLiteral]}).code;
     assert.equal(output, `
+var __liftToAST = require("${LIFT}").default;
+
 (function () {
   return {
     "type": "FunctionDeclaration",
@@ -301,8 +303,6 @@ var __liftToAST = require("${LIFT}").default;
     }
   };
 })();
-
-var __liftToAST = require("${LIFT}").default;
 `.trim());
   });
 
