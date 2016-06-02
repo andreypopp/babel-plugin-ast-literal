@@ -3,6 +3,8 @@ import generate from 'babel-generator';
 import assert from 'power-assert';
 import ASTLiteral from '../index';
 
+const LIFT = require.resolve('../liftToAST');
+
 describe('babel-plugin-ast-literal', function() {
 
   it('generates expressions', function() {
@@ -10,6 +12,7 @@ describe('babel-plugin-ast-literal', function() {
     let output = transform(src, {plugins: [ASTLiteral]}).code;
     assert.equal(output, `
 (function (_param) {
+  _param = __liftToAST(_param);
   return {
     "type": "BinaryExpression",
     "left": {
@@ -28,6 +31,8 @@ describe('babel-plugin-ast-literal', function() {
     }
   };
 })(2);
+
+var __liftToAST = require("${LIFT}");
 `.trim());
   });
 
@@ -36,6 +41,8 @@ describe('babel-plugin-ast-literal', function() {
     let output = transform(src, {plugins: [ASTLiteral]}).code;
     assert.equal(output, `
 (function (_param, _param2) {
+  _param = __liftToAST(_param);
+  _param2 = __liftToAST(_param2);
   return {
     "type": "FunctionExpression",
     "id": null,
@@ -57,6 +64,8 @@ describe('babel-plugin-ast-literal', function() {
     }
   };
 })(a, a);
+
+var __liftToAST = require("${LIFT}");
 `.trim());
   });
 
@@ -76,6 +85,8 @@ describe('babel-plugin-ast-literal', function() {
     "value": "ok"
   };
 })();
+
+var __liftToAST = require("${LIFT}");
 `.trim());
   });
 
@@ -84,6 +95,7 @@ describe('babel-plugin-ast-literal', function() {
     let output = transform(src, {plugins: [ASTLiteral]}).code;
     assert.equal(output, `
 (function (_param) {
+  _param = __liftToAST(_param);
   return {
     "type": "ExpressionStatement",
     "expression": {
@@ -101,6 +113,8 @@ describe('babel-plugin-ast-literal', function() {
     }
   };
 })(2);
+
+var __liftToAST = require("${LIFT}");
 `.trim());
   });
 
@@ -109,6 +123,7 @@ describe('babel-plugin-ast-literal', function() {
     let output = transform(src, {plugins: [ASTLiteral]}).code;
     assert.equal(output, `
 (function (_param) {
+  _param = __liftToAST(_param);
   return [{
     "type": "VariableDeclaration",
     "declarations": [{
@@ -155,6 +170,8 @@ describe('babel-plugin-ast-literal', function() {
     }
   }];
 })(2);
+
+var __liftToAST = require("${LIFT}");
 `.trim());
   });
 
@@ -163,11 +180,14 @@ describe('babel-plugin-ast-literal', function() {
     let output = transform(src, {plugins: [ASTLiteral]}).code;
     assert.equal(output, `
 (function (_param) {
+  _param = __liftToAST(_param);
   return {
     "type": "ReturnStatement",
     "argument": _param
   };
 })(1);
+
+var __liftToAST = require("${LIFT}");
 `.trim());
   });
 
@@ -176,6 +196,7 @@ describe('babel-plugin-ast-literal', function() {
     let output = transform(src, {plugins: [ASTLiteral]}).code;
     assert.equal(output, `
 (function (_param) {
+  _param = __liftToAST(_param);
   return {
     "type": "ExpressionStatement",
     "expression": {
@@ -187,6 +208,8 @@ describe('babel-plugin-ast-literal', function() {
     }
   };
 })(1);
+
+var __liftToAST = require("${LIFT}");
 `.trim());
   });
 
@@ -195,6 +218,8 @@ describe('babel-plugin-ast-literal', function() {
     let output = transform(src, {plugins: [ASTLiteral]}).code;
     assert.equal(output, `
 (function (_param, _param2) {
+  _param = __liftToAST(_param);
+  _param2 = __liftToAST(_param2);
   return {
     "type": "ImportDeclaration",
     "specifiers": [{
@@ -205,6 +230,8 @@ describe('babel-plugin-ast-literal', function() {
     "source": _param2
   };
 })(something, module);
+
+var __liftToAST = require("${LIFT}");
 `.trim());
   });
 
@@ -235,6 +262,8 @@ describe('babel-plugin-ast-literal', function() {
     "kind": "let"
   };
 })();
+
+var __liftToAST = require("${LIFT}");
 `.trim());
   });
 
@@ -272,6 +301,16 @@ describe('babel-plugin-ast-literal', function() {
     }
   };
 })();
+
+var __liftToAST = require("${LIFT}");
+`.trim());
+  });
+
+  it('does nothing if found no AST literals', function() {
+    let src = 'just(some(code))';
+    let output = transform(src, {plugins: [ASTLiteral]}).code;
+    assert.equal(output, `
+just(some(code));
 `.trim());
   });
 

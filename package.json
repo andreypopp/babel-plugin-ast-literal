@@ -22,6 +22,7 @@
     "babel-generator": "^6.7.5",
     "babel-plugin-espower": "^2.1.2",
     "babel-preset-prometheusresearch": "^0.1.0",
+    "babel-types": "^6.9.1",
     "eslint": "^2.7.0",
     "eslint-config-prometheusresearch": "^0.2.0",
     "eslint-plugin-react": "^4.3.0",

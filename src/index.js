@@ -6,6 +6,8 @@ import invariant from 'invariant';
 import * as babylon from 'babylon';
 
 const MARKER = '_babel-plugin-ast-literal';
+const LIFT = require.resolve('./liftToAST');
+const LIFT_ID = '__liftToAST';
 
 export function expr() {
   invariant(
@@ -105,10 +107,27 @@ export default function GenASTBabelPlugin(ctx) {
 
   return {
     visitor: {
-      TaggedTemplateExpression(path) {
+      Program: {
+        enter(path, {file}) {
+          file.seenASTLiteral = false;
+        },
+        exit(path, {file}) {
+          if (file.seenASTLiteral) {
+            path.node.body.push(t.variableDeclaration('var', [
+              t.variableDeclarator(
+                t.identifier(LIFT_ID),
+                t.callExpression(t.identifier('require'), [t.stringLiteral(LIFT)])
+              )
+            ]));
+          }
+        },
+      },
+      TaggedTemplateExpression(path, {file}) {
         let {node, parent, scope} = path;
         // TODO: We need better scope-aware checks
         if (node.tag.name === 'expr') {
+          file.seenASTLiteral = true;
+
           let {nodeNode, params} = taggedTemplateToNode(
             node, parent, scope, {expression: true});
           nodeNode = replaceParamsWithIdentifiers(nodeNode, params, locateExpression);
@@ -116,6 +135,8 @@ export default function GenASTBabelPlugin(ctx) {
             buildASTFactoryExpression(t, params, node.quasi.expressions, nodeNode)
           );
         } else if (node.tag.name === 'stmt') {
+          file.seenASTLiteral = true;
+
           let {nodeNode, params} = taggedTemplateToNode(
             node, parent, scope, {expression: false});
           nodeNode = replaceParamsWithIdentifiers(nodeNode, params, locateStatement);
@@ -129,10 +150,23 @@ export default function GenASTBabelPlugin(ctx) {
 }
 
 function buildASTFactoryExpression(t, paramNames, paramValues, template) {
+  let statements = [];
+  paramNames.forEach(paramName => {
+    let param = t.identifier(paramName);
+    statements.push(
+      t.expressionStatement(t.assignmentExpression(
+        '=',
+        param,
+        t.callExpression(t.identifier(LIFT_ID), [param])
+      ))
+    );
+  });
+  statements.push(t.returnStatement(template));
   return t.callExpression(
     t.functionExpression(
       null,
       paramNames.map(param => t.identifier(param)),
-      t.blockStatement([t.returnStatement(template)])),
+      t.blockStatement(statements)
+    ),
     paramNames.map((_, idx) => paramValues[idx]));
 }
