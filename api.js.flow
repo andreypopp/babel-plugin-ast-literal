@@ -1,0 +1,10 @@
+type Liftable = any;
+type JSAST = any;
+
+export function expr(string: string, ...values: Array<Liftable>): JSAST  {
+  throw new Error('babel-plugin-ast-literal is not active');
+}
+
+export function stmt(string: string, ...values: Array<Liftable>): JSAST  {
+  throw new Error('babel-plugin-ast-literal is not active');
+}
