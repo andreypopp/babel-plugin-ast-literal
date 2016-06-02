@@ -116,7 +116,10 @@ export default function GenASTBabelPlugin(ctx) {
             path.node.body.push(t.variableDeclaration('var', [
               t.variableDeclarator(
                 t.identifier(LIFT_ID),
-                t.callExpression(t.identifier('require'), [t.stringLiteral(LIFT)])
+                t.memberExpression(
+                  t.callExpression(t.identifier('require'), [t.stringLiteral(LIFT)]),
+                  t.identifier('default')
+                )
               )
             ]));
           }

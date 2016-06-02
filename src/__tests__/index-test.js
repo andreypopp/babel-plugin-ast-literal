@@ -32,7 +32,7 @@ describe('babel-plugin-ast-literal', function() {
   };
 })(2);
 
-var __liftToAST = require("${LIFT}");
+var __liftToAST = require("${LIFT}").default;
 `.trim());
   });
 
@@ -65,7 +65,7 @@ var __liftToAST = require("${LIFT}");
   };
 })(a, a);
 
-var __liftToAST = require("${LIFT}");
+var __liftToAST = require("${LIFT}").default;
 `.trim());
   });
 
@@ -86,7 +86,7 @@ var __liftToAST = require("${LIFT}");
   };
 })();
 
-var __liftToAST = require("${LIFT}");
+var __liftToAST = require("${LIFT}").default;
 `.trim());
   });
 
@@ -114,7 +114,7 @@ var __liftToAST = require("${LIFT}");
   };
 })(2);
 
-var __liftToAST = require("${LIFT}");
+var __liftToAST = require("${LIFT}").default;
 `.trim());
   });
 
@@ -171,7 +171,7 @@ var __liftToAST = require("${LIFT}");
   }];
 })(2);
 
-var __liftToAST = require("${LIFT}");
+var __liftToAST = require("${LIFT}").default;
 `.trim());
   });
 
@@ -187,7 +187,7 @@ var __liftToAST = require("${LIFT}");
   };
 })(1);
 
-var __liftToAST = require("${LIFT}");
+var __liftToAST = require("${LIFT}").default;
 `.trim());
   });
 
@@ -209,7 +209,7 @@ var __liftToAST = require("${LIFT}");
   };
 })(1);
 
-var __liftToAST = require("${LIFT}");
+var __liftToAST = require("${LIFT}").default;
 `.trim());
   });
 
@@ -231,7 +231,7 @@ var __liftToAST = require("${LIFT}");
   };
 })(something, module);
 
-var __liftToAST = require("${LIFT}");
+var __liftToAST = require("${LIFT}").default;
 `.trim());
   });
 
@@ -263,7 +263,7 @@ var __liftToAST = require("${LIFT}");
   };
 })();
 
-var __liftToAST = require("${LIFT}");
+var __liftToAST = require("${LIFT}").default;
 `.trim());
   });
 
@@ -302,7 +302,7 @@ var __liftToAST = require("${LIFT}");
   };
 })();
 
-var __liftToAST = require("${LIFT}");
+var __liftToAST = require("${LIFT}").default;
 `.trim());
   });
 
@@ -312,6 +312,7 @@ var __liftToAST = require("${LIFT}");
     assert.equal(output, `
 just(some(code));
 `.trim());
+
   });
 
 });
