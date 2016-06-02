@@ -3,13 +3,12 @@
  */
 
 import assert from 'power-assert';
-import * as build from 'babel-types';
 import generate from 'babel-generator';
+import * as types from 'babel-types';
 
 import liftToAST from '../liftToAST';
 
-let lift = obj => liftToAST(build, obj);
-let liftAndGen = obj => generate(lift(obj)).code;
+let liftAndGen = obj => generate(liftToAST(obj)).code;
 
 describe('liftToAST', function() {
 
@@ -39,8 +38,8 @@ describe('liftToAST', function() {
   });
 
   it('lefts JS AST values as-is', function() {
-    assert(liftAndGen(build.identifier('x')) === 'x');
-    assert(liftAndGen(build.stringLiteral('x')) === '"x"');
+    assert(liftAndGen(types.identifier('x')) === 'x');
+    assert(liftAndGen(types.stringLiteral('x')) === '"x"');
   });
 
 });

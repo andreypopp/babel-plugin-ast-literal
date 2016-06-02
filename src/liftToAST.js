@@ -2,47 +2,49 @@
  * @copyright 2016-present, Andrey Popp <8mayday@gmail.com>
  */
 
-export default function liftToAST(build, value) {
+import * as types from 'babel-types';
+
+export default function liftToAST(value) {
   if (value && typeof value.toJSAST === 'function') {
-    return value.toJSAST(build);
-  } else if (build.isNode(value)) {
+    return value.toJSAST(types);
+  } else if (types.isNode(value)) {
     return value;
   } else if (value === undefined) {
-    return build.identifier('undefined');
+    return types.identifier('undefined');
   } else if (value === null) {
-    return build.nullLiteral();
+    return types.nullLiteral();
   } else if (typeof value === 'string') {
-    return build.stringLiteral(value);
+    return types.stringLiteral(value);
   } else if (typeof value === 'number') {
-    return build.numericLiteral(value);
+    return types.numericLiteral(value);
   } else if (typeof value === 'boolean') {
-    return build.booleanLiteral(value);
+    return types.booleanLiteral(value);
   } else if (value instanceof RegExp) {
-    return build.regExpLiteral(
+    return types.regExpLiteral(
       value.source,
       regExpFlags(value)
     );
   } else if (value instanceof Date) {
-    return build.newExpression(
-      build.identifier('Date'),
-      [build.stringLiteral(value.toISOString())]
+    return types.newExpression(
+      types.identifier('Date'),
+      [types.stringLiteral(value.toISOString())]
     );
   } else if (Array.isArray(value)) {
-    return build.arrayExpression(value.map(item =>
-      liftToAST(build, item)));
+    return types.arrayExpression(value.map(item =>
+      liftToAST(item)));
   } else if (typeof value === 'object') {
     let properties = [];
     for (let key in value) {
       if (value.hasOwnProperty(key)) {
         properties.push(
-          build.objectProperty(
-            build.stringLiteral(key),
-            liftToAST(build, value[key])
+          types.objectProperty(
+            types.stringLiteral(key),
+            liftToAST(value[key])
           )
         );
       }
     }
-    return build.objectExpression(properties);
+    return types.objectExpression(properties);
   } else {
     throw new Error('cannot parse value to AST: ' + value);
   }

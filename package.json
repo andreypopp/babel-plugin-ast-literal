@@ -4,8 +4,9 @@
   "description": "AST literals via ES2015 tagged template strings",
   "main": "./lib/index.js",
   "dependencies": {
-    "invariant": "^2.2.1",
-    "babylon": "^6.7.0"
+    "babel-types": "^6.9.1",
+    "babylon": "^6.7.0",
+    "invariant": "^2.2.1"
   },
   "eslintConfig": {
     "extends": "prometheusresearch"
