@@ -6,7 +6,7 @@ import invariant from 'invariant';
 import * as babylon from 'babylon';
 
 const MARKER = '_babel-plugin-ast-literal';
-const LIFT = require.resolve('./liftToAST');
+const LIFT = 'babel-plugin-ast-literal/lib/liftToAST';
 const LIFT_ID = '__liftToAST';
 
 export function expr() {

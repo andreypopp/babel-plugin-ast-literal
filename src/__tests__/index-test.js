@@ -3,15 +3,13 @@ import generate from 'babel-generator';
 import assert from 'power-assert';
 import ASTLiteral from '../index';
 
-const LIFT = require.resolve('../liftToAST');
-
 describe('babel-plugin-ast-literal', function() {
 
   it('generates expressions', function() {
     let src = 'expr`1 + ${2}`';
     let output = transform(src, {plugins: [ASTLiteral]}).code;
     assert.equal(output, `
-var __liftToAST = require("${LIFT}").default;
+var __liftToAST = require("babel-plugin-ast-literal/lib/liftToAST").default;
 
 (function (_param) {
   _param = __liftToAST(_param);
@@ -40,7 +38,7 @@ var __liftToAST = require("${LIFT}").default;
     let src = 'expr`function(${a}) { return ${a}; }`';
     let output = transform(src, {plugins: [ASTLiteral]}).code;
     assert.equal(output, `
-var __liftToAST = require("${LIFT}").default;
+var __liftToAST = require("babel-plugin-ast-literal/lib/liftToAST").default;
 
 (function (_param, _param2) {
   _param = __liftToAST(_param);
@@ -73,7 +71,7 @@ var __liftToAST = require("${LIFT}").default;
     let src = 'expr`"ok"`';
     let output = transform(src, {plugins: [ASTLiteral]}).code;
     assert.equal(output, `
-var __liftToAST = require("${LIFT}").default;
+var __liftToAST = require("babel-plugin-ast-literal/lib/liftToAST").default;
 
 (function () {
   return {
@@ -94,7 +92,7 @@ var __liftToAST = require("${LIFT}").default;
     let src = 'stmt`1 + ${2}`';
     let output = transform(src, {plugins: [ASTLiteral]}).code;
     assert.equal(output, `
-var __liftToAST = require("${LIFT}").default;
+var __liftToAST = require("babel-plugin-ast-literal/lib/liftToAST").default;
 
 (function (_param) {
   _param = __liftToAST(_param);
@@ -122,7 +120,7 @@ var __liftToAST = require("${LIFT}").default;
     let src = 'stmt`let result = 1 + ${2}; console.log(result);`';
     let output = transform(src, {plugins: [ASTLiteral]}).code;
     assert.equal(output, `
-var __liftToAST = require("${LIFT}").default;
+var __liftToAST = require("babel-plugin-ast-literal/lib/liftToAST").default;
 
 (function (_param) {
   _param = __liftToAST(_param);
@@ -179,7 +177,7 @@ var __liftToAST = require("${LIFT}").default;
     let src = 'stmt`return ${1}`';
     let output = transform(src, {plugins: [ASTLiteral]}).code;
     assert.equal(output, `
-var __liftToAST = require("${LIFT}").default;
+var __liftToAST = require("babel-plugin-ast-literal/lib/liftToAST").default;
 
 (function (_param) {
   _param = __liftToAST(_param);
@@ -195,7 +193,7 @@ var __liftToAST = require("${LIFT}").default;
     let src = 'stmt`super(${1});`';
     let output = transform(src, {plugins: [ASTLiteral]}).code;
     assert.equal(output, `
-var __liftToAST = require("${LIFT}").default;
+var __liftToAST = require("babel-plugin-ast-literal/lib/liftToAST").default;
 
 (function (_param) {
   _param = __liftToAST(_param);
@@ -217,7 +215,7 @@ var __liftToAST = require("${LIFT}").default;
     let src = 'stmt`import ${something} from "${module}";`';
     let output = transform(src, {plugins: [ASTLiteral]}).code;
     assert.equal(output, `
-var __liftToAST = require("${LIFT}").default;
+var __liftToAST = require("babel-plugin-ast-literal/lib/liftToAST").default;
 
 (function (_param, _param2) {
   _param = __liftToAST(_param);
@@ -239,7 +237,7 @@ var __liftToAST = require("${LIFT}").default;
     let src = 'stmt`let x = {...x};`';
     let output = transform(src, {plugins: [ASTLiteral]}).code;
     assert.equal(output, `
-var __liftToAST = require("${LIFT}").default;
+var __liftToAST = require("babel-plugin-ast-literal/lib/liftToAST").default;
 
 (function () {
   return {
@@ -271,7 +269,7 @@ var __liftToAST = require("${LIFT}").default;
     let src = 'stmt`async function name(x) { await x; }`';
     let output = transform(src, {plugins: [ASTLiteral]}).code;
     assert.equal(output, `
-var __liftToAST = require("${LIFT}").default;
+var __liftToAST = require("babel-plugin-ast-literal/lib/liftToAST").default;
 
 (function () {
   return {
